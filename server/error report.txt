@@ -1,0 +1,9 @@
+1. seller.js <-> seller.html 연결 오류 있음 -해결 ver 3.1
+
+2. insert query 작동안함 - 해결 X
+
+3. error.html 작성안함 - 해결 X
+
+4. db 변경 - 해결 ver 3.1
+
+5. server play 구축 - 해결 ver 3.1
