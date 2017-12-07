@@ -6,11 +6,15 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var ejs = require('ejs');
+var schedule = require('node-schedule');
+var nodemail = require('nodemailer');
+var excel = require('excel-export');
 
 //custum module
 var main = require('./routes/main');
 var buyer = require('./routes/buyer');
 var seller = require('./routes/seller');
+var client = require('./routes/Data_Base/db.js');
 
 var app = express();
 
@@ -47,6 +51,109 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error.html');
+});
+
+
+//makeing excel _ but not work
+var exceling = function(){
+	var conf = {}
+	conf.col = [{
+		caption: 'Date',
+		type: 'string',
+		width: 15
+	},
+	{
+		caption:'fname',
+		type:'string',
+		width : 10
+	},
+	{
+		caption:'fphone',
+		type: 'string',
+		width : 15
+	},
+	{
+		caption: 'tname',
+		type: 'string',
+		width: 10
+	},
+	{
+		caption: 'tphone',
+		type: 'string',
+		width: 15	
+	},
+	{
+		caption: 'address',
+		type: 'string',
+		width: 50
+	},
+	{
+		caption: 'ordercount',
+		type: 'number',
+		width: 5
+	},
+	{
+		caption: 'orderoption',
+		type: 'number',
+		width: 5
+	}];
+
+	client.query("Select * From item", function(err, rows){
+		arr = [];
+		for(i = 0; i<rows.length; i++ ){
+			date = rows[i].date;
+			fname = rows[i].fname;
+			fphone = rows[i].fphone;
+			tname = rows[i].tname;
+			tphone = rows[i].tphone;
+			address = rows[i].address;
+			ordercount = rows[i].ordercount;
+			orderoption = rows[i].orderoption;
+			a = [date, fname, fphone, tname, tphone, address, ordercount, orderoption];
+			arr.push(a);
+		}
+		conf.rows = arr;
+
+		var result = excel.execute(conf);
+
+	});
+}
+
+
+//for and mailing
+var mail_go = schedule.scheduleJob('17 * * *', function(){
+	var smtp = nodemailer.createTransport("SMTP", {
+		service: 'Gmail',
+		auth : {
+			user : 'id',
+			pass : 'password'
+		}
+	});
+
+	var mail = {
+		from : 'name_<mail_address>',
+		to : '<to_address>',
+		subject : 'mail_title',
+		text : 'text',
+		attachments : [
+			{
+				fileName : 'file_name',
+				streamSource: fs.createReadStream('file_path')
+			}
+		]
+
+	}
+
+	smtp.sendMail(mail, function(error, response){
+		if(error){
+			console.log(error)
+		}else{
+			console.log("mailing is OK!");
+		}
+		stmp.close();
+
+	});
+
 });
 
 module.exports = app;

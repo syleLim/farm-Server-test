@@ -7,10 +7,13 @@ var client = require('./Data_Base/db.js');
 
 //Get routing
 router.get('/', function(req, res, next) {
-	fs.readFile('C:/Users/syle6/Desktop/server_ver3.1/server/views/seller.html', 'utf8', function(error, data){
+	fs.readFile('C:/Users/syle6/Desktop/server_ver3.2/server/views/seller_.html', 'utf8', function(error, data){
 		console.log('fs is OK!');
 
-		client.query('Select * From test', function(err, results){
+
+		//client,query('Select count(*) from item where orderoption = "1"', )
+
+		client.query('Select * From item', function(err, results){
 			
 			if(error){
 				console.log('query error : '+error);

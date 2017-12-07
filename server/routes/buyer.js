@@ -7,7 +7,6 @@ var fs = require('fs');
 var ejs = require('ejs');
 
 //checking module
-var inputcheck = require('C:/Users/syle6/Desktop/server_ver3.1/server/public/javascripts/check_buyer.js');
 
 //Get Set up
 router.get('/', function(request, response, next){
@@ -19,17 +18,18 @@ router.post('/', function(request, response, next){
 	console.log('post router ok!');
 	var body = request.body;
 
-	//check all data
-	if(inputcheck(body, response)){
+	var s = new Date()
+	var y = s.getFullYear();
+	var m = s.getMonth()+1;
+	var d = s.getDate();
 
-		client.query('Insert Into test ( date, fname, fphone, tname, tphone, address, ordercount, orderoption) VALUES (now(), ?, ?, ?, ?, ?, ?, ?)',
-		[ body.fname, body.fphone1+body.fphone2+body.fphone3, body.tname, body.tphone1+body.tphone2+body.tphone3, body.address, body.ordercount, body.orderoption],
-	 	function(){
-	 		response.redirect('/buyer');
-		});	
-	}else{
-		//TODO: alert play , no redirect
-	}
+
+
+	client.query('Insert Into item ( date, fname, fphone, tname, tphone, address, ordercount, orderoption, sphone ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+		,[ y+m+d, body.fname, body.fphone1+body.fphone2+body.fphone3, body.tname, body.tphone1+body.tphone2+body.tphone3, body.address, body.ordercount, body.orderoption, "1"],
+		function(){
+			response.redirect('/buyer');
+	});
 	
 });
 
