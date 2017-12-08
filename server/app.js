@@ -54,10 +54,10 @@ app.use(function(err, req, res, next) {
 });
 
 
-//makeing excel _ but not work
-var exceling = function(){
+//makeing excel _ but not work (for routing)
+var exceling = function(req, res){
 	var conf = {}
-	conf.col = [{
+	conf.cols = [{
 		caption: 'Date',
 		type: 'string',
 		width: 15
@@ -116,9 +116,16 @@ var exceling = function(){
 
 		var result = excel.execute(conf);
 
+		//not submit
+		res.send()
+
 	});
 }
 
+
+var make_excel = schedule.scheduleJob('15 * * * *', function(){
+	exceling();
+});
 
 //for and mailing
 var mail_go = schedule.scheduleJob('17 * * *', function(){
@@ -155,5 +162,46 @@ var mail_go = schedule.scheduleJob('17 * * *', function(){
 	});
 
 });
+
+//make excel
+var exceling = function(){
+	client.query("Select * From item", function(err, rows){
+		
+		arr = [];
+		for(i=0; i < rows.length; i++){
+			var date = rows[i].date;
+			var fname = rows[i].fname;
+			var fphone = rows[i].fphone;
+			var tname = rows[i].tname;
+			var tphone = rows[i].tphone;
+			var address = rows[i].address;
+			var ordercount = rows[i].ordercount;
+			var orderoption = rows[i].orderoption;
+			var a = {
+				"date" : date,
+				"fname" : fname,
+				"fphone" : fphone,
+				"tname" : tname,
+				"tphone": tphone,
+				"address": address,
+				"ordercount": ordercount,
+				"orderoption": orderoption,
+				"sphone" : '1'
+			}
+			arr.push(a);
+		}
+
+		var data ='';
+
+		for (var i = 0; i< arr.length; i++){
+			data = data+arr[i].date+'\t'+arr[i].fname+'\t'+arr[i].fphone+'\t'+arr[i].tname+'\t'+arr[i].tphone+'\t'+arr[i].address+'\t'+arr[i].ordercount.toString()+'\t'+arr[i].orderoption.toString()+'\t'+arr[i].sphone+'\n';		
+		}
+
+		fs.appendFile('test.xls', data, (err) => {
+			if (err) throw err;
+			console.log("Create excel");
+		});
+	});
+}
 
 module.exports = app;

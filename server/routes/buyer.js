@@ -19,18 +19,22 @@ router.post('/', function(request, response, next){
 	var body = request.body;
 
 	var s = new Date()
-	var y = s.getFullYear();
-	var m = s.getMonth()+1;
-	var d = s.getDate();
+	var y = s.getFullYear().toString();
+	var m = (s.getMonth()+1).toString();
+	var d = s.getDate().toStriong();
 
 
 
 	client.query('Insert Into item ( date, fname, fphone, tname, tphone, address, ordercount, orderoption, sphone ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
 		,[ y+m+d, body.fname, body.fphone1+body.fphone2+body.fphone3, body.tname, body.tphone1+body.tphone2+body.tphone3, body.address, body.ordercount, body.orderoption, "1"],
 		function(){
+
 			response.redirect('/buyer');
 	});
 	
 });
+
+
+
 
 module.exports = router;
